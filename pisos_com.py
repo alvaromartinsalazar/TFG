@@ -11,6 +11,10 @@ zonas = soup.find(class_='zoneList')
 for tag in tags:
     tags2=zonas('a')
     for tag2 in tags2:
-        print(tag2.get('href'))
+        enlaces_zonas=tag2.get('href')
+        tags3='https://www.pisos.com'+enlaces_zonas
+        print(tags3)
         
+        
+
     
