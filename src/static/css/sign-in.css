@@ -8,3 +8,12 @@ form{
   padding: 20px;
   border-radius: 20px;
 }
+
+form div:last-of-type{
+  margin-top: 15px;
+  background-color: rgb(212, 170, 170);
+  color: rgb(128, 9, 9);
+  border-radius: 5px;
+  text-align: center;
+  border: 1px solid rgb(128, 9, 9);
+}
