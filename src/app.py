@@ -111,7 +111,7 @@ def web():
         except Exception as e:
             print('Error al abrir la URL:', e)
 
-    return render_template('index.html', enlaces_principales=enlaces_principales, enlaces_secundarios=enlaces_secundarios)
+    return render_template('index.html', titulo1="Enlaces principales:", enlaces_principales=enlaces_principales, titulo2="Enlaces secundarios:", enlaces_secundarios=enlaces_secundarios)
 
 
 if __name__ == '__main__':
