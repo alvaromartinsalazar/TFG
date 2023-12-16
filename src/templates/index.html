@@ -11,8 +11,24 @@
             
         </aside>
     </header>
-    
+    <form action="/index" method="POST">
+        <label for="web">Web</label>
+        <input type="text" name="web" id="web">
+        <button>Buscar</button>
+        <h1>Enlaces Principales:</h1>
+    <ul>
+        {% for enlace in enlaces_principales %}
+            <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
+        {% endfor %}
+    </ul>
 
+    <h1>Enlaces Secundarios:</h1>
+    <ul>
+        {% for enlace in enlaces_secundarios %}
+            <li><a href="{{ enlace.url }}">{{ enlace.url }}</a></li>
+        {% endfor %}
+    </ul>
+    </form>
 
     <footer>
 
