@@ -1,0 +1,39 @@
+
+
+.container{
+    background-color: rgb(155, 221, 210);
+    position: absolute;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    border-radius: 20px;
+    width: 60%;
+    box-shadow: 0px 0px 5px grey;
+}
+
+form{
+    background-color: beige;
+    padding: 3%;
+    border-radius: 20px;
+}
+
+form input{
+    width: 30%;
+}
+
+form button{
+    border-radius: 365px;
+    height: 30px;
+    cursor: pointer;
+    background-color: rgb(155, 221, 210);
+}
+
+form button:hover{
+    box-shadow: 0px 0px 5px black;
+}
+
+li{
+    list-style: none;
+}
