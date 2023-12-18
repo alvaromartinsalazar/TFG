@@ -11,6 +11,10 @@ form{
 
 form div:last-of-type{
   margin-top: 15px;
+  text-align: center;
+}
+
+form span{
   background-color: rgb(212, 170, 170);
   color: rgb(128, 9, 9);
   border-radius: 5px;

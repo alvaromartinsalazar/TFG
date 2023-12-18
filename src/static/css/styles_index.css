@@ -1,4 +1,10 @@
+*{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
 
+html{
+    background-color: beige;
+}
 
 .container{
     background-color: rgb(155, 221, 210);
@@ -10,24 +16,27 @@
     padding: 30px;
     border-radius: 20px;
     width: 60%;
-    box-shadow: 0px 0px 5px grey;
+    box-shadow: 0px 0px 10px grey;
 }
 
 form{
     background-color: beige;
     padding: 3%;
     border-radius: 20px;
+    text-align: center;
 }
 
 form input{
-    width: 30%;
+    width: 40%;
 }
 
 form button{
+    width: 30px;
     border-radius: 365px;
     height: 30px;
     cursor: pointer;
     background-color: rgb(155, 221, 210);
+    border: 1px solid black;
 }
 
 form button:hover{
@@ -36,4 +45,17 @@ form button:hover{
 
 li{
     list-style: none;
+}
+
+a{
+    text-decoration: none;
+    color: beige;
+    font-weight: bold;
+    font-size: 130%;
+    text-shadow: 1px 1.5px black;
+}
+
+a:hover{
+    color: black;
+    text-shadow: 1px 1.5px beige;
 }
