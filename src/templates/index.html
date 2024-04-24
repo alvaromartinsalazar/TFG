@@ -1,48 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_index.css' ) }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HogarData</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ejemplo.css' ) }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/Logo_HogarData.png' ) }}" type="image/x-icon">
 </head>
-
 <body>
-    <header>
-        <aside>
-
-        </aside>
-    </header>
+  <header>
     <div class="container">
-        <form action="/index" method="POST">
-            <input type="text" name="web" id="web" placeholder="Introduce página web">
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg>
-            </button>
-        </form>
-        <h1>{{titulo1}}</h1>
+      <nav>
         <ul>
-            {% for enlace in enlaces_principales %}
-            <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
-            {% endfor %}
+          <li><a href="#">Comprar</a></li>
+          <li><a href="#">Alquilar</a></li>
+          <li><a href="#">Vender</a></li>
         </ul>
-
-        <h1>{{titulo2}}</h1>
-        <ul>
-            {% for enlace in enlaces_secundarios %}
-            <li><a href="{{ enlace.url }}">{{ enlace.url }}</a></li>
-            {% endfor %}
-        </ul>
+      </nav>
     </div>
+  </header>
 
-    <footer>
+  <main>
+    <section class="hero">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/Logo_HogarData.png' ) }}" alt="HogarData">
+        </div>
+      <div class="container">
+        <div class="hero-content">
+          <h1>Encuentra tu hogar perfecto</h1>
+          <p>Explora miles de propiedades en venta y renta. Filtra por ubicación, precio, tamaño y más.</p>
+          <button>Comienza tu búsqueda</button>
+        </div>
+      </div>
+    </section>
 
-    </footer>
+    <section class="properties">
+      <div class="container">
+        <h2>Propiedades destacadas</h2>
+        <div class="properties-list">
+          <div class="property">
+            <img src="property1.jpg" alt="Property 1">
+            <div class="property-info">
+              <h3>Casa en venta</h3>
+              <p>3 habitaciones, 2 baños, 150 m²</p>
+              <span class="price">$250,000</span>
+            </div>
+          </div>
+          <div class="property">
+            <img src="property2.jpg" alt="Property 2">
+            <div class="property-info">
+              <h3>Apartamento en renta</h3>
+              <p>2 habitaciones, 1 baño, 80 m²</p>
+              <span class="price">$1,200/mes</span>
+            </div>
+          </div>
+          <div class="property">
+            <img src="property3.jpg" alt="Property 3">
+            <div class="property-info">
+              <h3>Terreno en venta</h3>
+              <p>500 m²</p>
+              <span class="price">$50,000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about">
+      <div class="container">
+        <h2>Acerca de nosotros</h2>
+        <p>¡Nuevos comienzos, nuevos hogares! Somos una empresa inmobiliaria fresca y apasionada.</p>
+        <button>Contáctanos</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 HogarData</p>
+    </div>
+  </footer>
 </body>
-
 </html>
