@@ -7,6 +7,7 @@ body {
     background-color: #337ab7;
     color: #fff;
     padding: 20px 0;
+
   }
   
   .container {
@@ -17,6 +18,12 @@ body {
 
   .container:first-of-type li:hover{
     text-shadow: 1px 1px 1px black;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center;
   }
   
   nav ul {
@@ -34,6 +41,10 @@ body {
   nav a {
     color: #fff;
     text-decoration: none;
+  }
+
+  nav button:hover{
+    cursor: pointer;
   }
   
   .logo {
@@ -148,3 +159,24 @@ body {
     text-align: center;
   }
   
+
+  .login-btn {
+    position: relative;
+}
+  
+.login-btn button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+  
+.login-btn button a {
+    color: #fff;
+    text-decoration: none;
+}
+  
+.login-btn button:hover {
+    background-color: #0056b3;
+}

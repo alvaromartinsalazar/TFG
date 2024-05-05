@@ -20,7 +20,7 @@ def home():
     for record in myresult:
         insertObject.append(dict(zip(columnNames, record)))
     cursor.close()
-    return render_template('login.html', data=insertObject)
+    return render_template('index.html', data=insertObject)
 
     
 @app.route('/login', methods=['GET', 'POST'])
@@ -37,7 +37,7 @@ def login():
 
         if user:
             # Si las credenciales son correctas, redirige a la página principal
-            return render_template('index.html')
+            return render_template('prueba.html')
         else:
             # Si las credenciales son incorrectas, puedes renderizar nuevamente el formulario de inicio de sesión con un mensaje de error
             return render_template('login.html', error="Credenciales incorrectas. Inténtalo de nuevo.")
