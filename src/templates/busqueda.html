@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Búsqueda</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Búsqueda de propiedades</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Perfil</a></li>
+        <li><!-- Por ejemplo, en login.html -->
+          <form action="{{ url_for('logout') }}" method="post">
+              <button type="submit">Cerrar sesión</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="filters">
+      <h2>Filtros de búsqueda</h2>
+      <form id="search-form">
+        <div class="filter">
+          <label for="num-habitaciones">Número de habitaciones:</label>
+          <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
+        </div>
+        <div class="filter">
+          <label for="metros-cuadrados">Metros cuadrados:</label>
+          <input type="number" id="metros-cuadrados" name="metros-cuadrados" min="0">
+        </div>
+        <!-- Agrega más filtros según sea necesario -->
+
+        <button type="button" onclick="searchProperties()">Buscar</button>
+      </form>
+    </section>
+
+    <section class="search-results" id="results" style="display: none;">
+      <h2>Resultados de búsqueda</h2>
+      <!-- Aquí mostrarías los resultados de la búsqueda -->
+      <button class="export-btn">Exportar a Excel</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 HogarData</p>
+  </footer>
+
+  <script>
+    function searchProperties() {
+      // Captura los valores de los filtros
+      var numHabitaciones = document.getElementById("num-habitaciones").value;
+      var metrosCuadrados = document.getElementById("metros-cuadrados").value;
+      // Captura más valores de filtros según sea necesario
+
+      // Envía los valores de los filtros al backend para procesar la búsqueda
+      // Aquí deberías realizar una petición AJAX a tu servidor Flask
+
+      // Una vez que se obtienen los resultados, muestra la sección de resultados
+      document.getElementById("results").style.display = "block";
+    }
+  </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import urllib, urllib.request
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, redirect, url_for
+from flask_mail import Mail, Message
 import os
 import database as db
 
@@ -8,6 +9,15 @@ template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 template_dir = os.path.join(template_dir, 'src', 'templates')
 
 app = Flask(__name__, template_folder = template_dir)
+
+# Configuración para Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Servidor SMTP de Gmail
+app.config['MAIL_PORT'] = 465  # Puerto SMTP de Gmail
+app.config['MAIL_USERNAME'] = 'pruebasmail.alvaro@gmail.com'  # Correo electrónico desde el que se enviarán los mensajes
+app.config['MAIL_PASSWORD'] = os.environ.get('PASSWORD')  # Contraseña del correo electrónico
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 @app.route('/')
 def home():
@@ -37,7 +47,7 @@ def login():
 
         if user:
             # Si las credenciales son correctas, redirige a la página principal
-            return render_template('prueba.html')
+            return render_template('busqueda.html')
         else:
             # Si las credenciales son incorrectas, puedes renderizar nuevamente el formulario de inicio de sesión con un mensaje de error
             return render_template('login.html', error="Credenciales incorrectas. Inténtalo de nuevo.")
@@ -96,6 +106,40 @@ def web():
             print('Error al abrir la URL:', e)
 
     return render_template('index.html', titulo1="Enlaces principales:", enlaces_principales=enlaces_principales, titulo2="Enlaces secundarios:", enlaces_secundarios=enlaces_secundarios)
+
+
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+    # Aquí puedes agregar cualquier lógica necesaria para cerrar la sesión
+    # Por ejemplo, eliminar la sesión actual del usuario
+    # session.pop('user_id', None)
+
+    # Luego, redirige al usuario a la página de inicio
+    return render_template('index.html')
+
+@app.route('/contacto', methods=['GET', 'POST'])
+def contacto():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        email = request.form['email']
+        mensaje = request.form['mensaje']
+
+        # Crear un objeto Message para el correo electrónico
+        msg = Message(subject='Mensaje de contacto desde HogarData',
+                      recipients=['alvaromartinsalazar@gmail.com'],  # Dirección de correo electrónico de destino
+                      body=f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}')
+
+        # Enviar el correo electrónico
+        try:
+            mail.send(msg)
+            return redirect(url_for('contacto_exitoso'))
+        except Exception as e:
+            # Manejar el error si ocurre algún problema al enviar el correo electrónico
+            print('Error al enviar el correo electrónico:', e)
+            return 'Error al enviar el correo electrónico. Inténtalo de nuevo más tarde.'
+    else:
+        return render_template('contacto.html')
+
 
 
 if __name__ == '__main__':
