@@ -8,47 +8,53 @@
 </head>
 <body>
   <header>
-    <h1>Búsqueda de propiedades</h1>
-    <nav>
-      <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Perfil</a></li>
-        <li><!-- Por ejemplo, en login.html -->
-          <form action="{{ url_for('logout') }}" method="post">
-              <button type="submit">Cerrar sesión</button>
-          </form>
-        </li>
-      </ul>
-    </nav>
+    <div class="container">
+      <h1>Búsqueda de propiedades</h1>
+      <nav>
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+          <li><!-- Por ejemplo, en login.html -->
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit">Cerrar sesión</button>
+            </form>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
   <main>
-    <section class="filters">
-      <h2>Filtros de búsqueda</h2>
-      <form id="search-form">
-        <div class="filter">
-          <label for="num-habitaciones">Número de habitaciones:</label>
-          <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
-        </div>
-        <div class="filter">
-          <label for="metros-cuadrados">Metros cuadrados:</label>
-          <input type="number" id="metros-cuadrados" name="metros-cuadrados" min="0">
-        </div>
-        <!-- Agrega más filtros según sea necesario -->
+    <div class="container">
+      <section class="filters">
+        <h2>Filtros de búsqueda</h2>
+        <form id="search-form">
+          <div class="filter">
+            <label for="num-habitaciones">Número de habitaciones:</label>
+            <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
+          </div>
+          <div class="filter">
+            <label for="metros-cuadrados">Metros cuadrados:</label>
+            <input type="number" id="metros-cuadrados" name="metros-cuadrados" min="0">
+          </div>
+          <!-- Agrega más filtros según sea necesario -->
 
-        <button type="button" onclick="searchProperties()">Buscar</button>
-      </form>
-    </section>
+          <button type="button" onclick="searchProperties()">Buscar</button>
+        </form>
+      </section>
 
-    <section class="search-results" id="results" style="display: none;">
-      <h2>Resultados de búsqueda</h2>
-      <!-- Aquí mostrarías los resultados de la búsqueda -->
-      <button class="export-btn">Exportar a Excel</button>
-    </section>
+      <section class="search-results" id="results" style="display: none;">
+        <h2>Resultados de búsqueda</h2>
+        <!-- Aquí mostrarías los resultados de la búsqueda -->
+        <button class="export-btn">Exportar a Excel</button>
+      </section>
+    </div>
   </main>
 
   <footer>
-    <p>&copy; 2024 HogarData</p>
+    <div class="container">
+      <p>&copy; 2024 HogarData</p>
+    </div>
   </footer>
 
   <script>

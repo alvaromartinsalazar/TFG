@@ -85,3 +85,11 @@
   </footer>
 </body>
 </html>
+
+<script>
+  // Verificar si el usuario intenta navegar hacia atrás
+  window.addEventListener('popstate', function(event) {
+      // Redirigir al usuario a la página de inicio
+      window.location.href = "{{ url_for('home') }}";
+  });
+</script>

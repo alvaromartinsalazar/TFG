@@ -1,6 +1,6 @@
 import urllib, urllib.request
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mail import Mail, Message
 import os
 import database as db
@@ -141,6 +141,30 @@ def contacto():
         return render_template('contacto.html')
 
 
+@app.route('/perfil')
+def perfil():
+    # Verificar si el usuario está autenticado
+    if 'user_id' in session:
+        # Si el usuario está autenticado, renderiza la plantilla de perfil con los datos del usuario
+        return render_template('perfil.html')
+    # Si el usuario no está autenticado, redirige al usuario a la página de inicio de sesión
+    return redirect(url_for('login'))
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        email = request.form['email']
+        password = request.form['password']
+        # Actualizar el correo electrónico y la contraseña del usuario en la base de datos
+        cursor = db.database.cursor()
+        cursor.execute("UPDATE usuarios SET email = %s, password = %s WHERE id = %s", (email, password, user_id))
+        db.database.commit()
+        cursor.close()
+        # Redirigir al usuario a la página de perfil después de la actualización
+        return redirect(url_for('perfil'))
+    # Si el usuario no está autenticado, redirigirlo a la página de inicio de sesión
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
