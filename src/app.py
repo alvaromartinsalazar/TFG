@@ -1,9 +1,13 @@
 import urllib, urllib.request
+from xml.dom.minidom import Document
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mail import Mail, Message
 import os
+
+import requests
 import database as db
+
 
 template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 template_dir = os.path.join(template_dir, 'src', 'templates')
@@ -54,58 +58,6 @@ def login():
     else:
         # Si la solicitud es GET, muestra el formulario de inicio de sesión
         return render_template('login.html')
-    
-@app.route('/index', methods=['GET', 'POST'])
-def web():
-    enlaces_principales=[]
-    enlaces_secundarios=[]
-    if request.method == 'POST':
-
-        url = request.form['web']
-
-        # Verificar si la URL tiene el esquema (http:// o https://)
-        if not (url.startswith('http://') or url.startswith('https://')):
-            url = 'http://' + url  # Agregar el esquema http:// si no está presente
-
-        try:
-            html = urllib.request.urlopen(url)
-            soup = BeautifulSoup(html, 'html.parser')
-
-            tags = soup.find_all('a')
-
-            print('Enlaces en la página principal: \r\n')
-
-            for tag in tags:
-                enlaces_principales.append({'texto': tag.contents[0], 'url': tag.get('href')})
-
-            print('\r\n Enlaces en las páginas secundarias: \r\n')
-
-            for tag in tags:
-                enlaces_secundarios.append({'url': newtag.get('href')})
-                print('Accediendo a las páginas de la web', enlaces_secundarios)
-                try:
-                    if enlaces_secundarios and (enlaces_secundarios.startswith('http://') or enlaces_secundarios.startswith('https://')):
-                        html2 = urllib.request.urlopen(enlaces_secundarios)
-                    else:
-                        if enlaces_secundarios:
-                            html2 = urllib.request.urlopen(url + enlaces_secundarios)
-                        else:
-                            continue  # Ignorar enlaces nulos
-                    soup2 = BeautifulSoup(html2, 'html.parser')
-                    newtags = soup2.find_all('a')
-                    if len(newtags) > 0:
-                        print(len(newtags), 'enlaces: ')
-                        for newtag in newtags:
-                            print(newtag.get('href'))
-                    else:
-                        print('No hay más enlaces')
-                except Exception as e:
-                    print('Algo ha fallado:', e)
-
-        except Exception as e:
-            print('Error al abrir la URL:', e)
-
-    return render_template('index.html', titulo1="Enlaces principales:", enlaces_principales=enlaces_principales, titulo2="Enlaces secundarios:", enlaces_secundarios=enlaces_secundarios)
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -166,5 +118,52 @@ def update_profile():
     # Si el usuario no está autenticado, redirigirlo a la página de inicio de sesión
     return redirect(url_for('login'))
 
+#AQUI EMPIEZA EL SCRAPING
+@app.route('/index', methods=['GET', 'POST'])
+def web():
+    enlaces_principales = []
+    enlaces_secundarios = []
+    resultados = []
+
+    if request.method == 'POST':
+        ciudad = request.form['ciudad']
+        tipo_propiedad = request.form['tipo_propiedad']
+
+        # Construir la URL de búsqueda en Fotocasa
+        url = f"https://www.fotocasa.es/es/comprar/viviendas/{ciudad}?maxPrice=100000"
+        if tipo_propiedad != 'Todos':
+            url += f"&propertySubtypeId={tipo_propiedad.lower()}"
+
+        # Realizar la solicitud GET a la URL de Fotocasa
+        response = requests.get(url)
+
+        # Parsear el contenido HTML de la respuesta
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Encontrar todos los elementos de anuncios de propiedades
+        anuncios = soup.find_all('div', class_='re-Card')
+
+        # Extraer información relevante de cada anuncio
+        # Dentro del bucle que recorre los anuncios
+        for anuncio in anuncios:
+            titulo = anuncio.find('a', class_='re-Card-titleLink').text.strip()
+            precio = anuncio.find('span', class_='re-Card-price').text.strip()
+            descripcion = anuncio.find('div', class_='re-Card-description').text.strip()
+            imagen_url = anuncio.find('img')['src']
+            link = anuncio.find('a', class_='re-Card-titleLink')['href']
+            
+            # Imprimir los datos de cada anuncio para depuración
+            print(f'Título: {titulo}')
+            print(f'Precio: {precio}')
+            print(f'Descripción: {descripcion}')
+            print(f'URL de la imagen: {imagen_url}')
+            print(f'Enlace: {link}')
+
+    return render_template('fotocasa.html', resultados=resultados)
+
+
+
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
