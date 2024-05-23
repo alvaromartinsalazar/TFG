@@ -59,26 +59,16 @@
 
   <script>
     function searchProperties() {
-      // ... (código para buscar y filtrar propiedades)
+      // Captura los valores de los filtros
+      var numHabitaciones = document.getElementById("num-habitaciones").value;
+      var metrosCuadrados = document.getElementById("metros-cuadrados").value;
+      // Captura más valores de filtros según sea necesario
 
-      // Actualizar la sección de resultados de búsqueda con las propiedades filtradas
-      var sectionResults = document.getElementById("results");
-      sectionResults.innerHTML = ""; // Limpiar el contenido previo
+      // Envía los valores de los filtros al backend para procesar la búsqueda
+      // Aquí deberías realizar una petición AJAX a tu servidor Flask
 
-      for (let filteredProperty of filtered_properties) {
-        // Crear un elemento HTML para representar la propiedad filtrada
-        var propertyElement = document.createElement('div');
-        propertyElement.classList.add('property-card'); // Aplicar la clase CSS para el estilo
-
-        // Agregar contenido a la propiedad filtrada (por ejemplo, imagen, título, precio, etc.)
-        // ...
-
-        // Añadir la propiedad filtrada a la sección de resultados
-        sectionResults.appendChild(propertyElement);
-      }
-
-      // Mostrar la sección de resultados de búsqueda
-      sectionResults.style.display = "block";
+      // Una vez que se obtienen los resultados, muestra la sección de resultados
+      document.getElementById("results").style.display = "block";
     }
   </script>
 </body>
