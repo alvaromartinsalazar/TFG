@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Búsqueda</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
+  <style>
+    .result-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .result-item img {
+      margin-right: 20px;
+    }
+    .result-item div {
+      max-width: 70%;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -14,7 +27,7 @@
         <ul>
           <li><a href="#">Inicio</a></li>
           <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
-          <li><!-- Por ejemplo, en login.html -->
+          <li>
             <form action="{{ url_for('logout') }}" method="post">
                 <button type="submit">Cerrar sesión</button>
             </form>
@@ -33,20 +46,12 @@
             <label for="num-habitaciones">Número de habitaciones:</label>
             <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
           </div>
-          <div class="filter">
-            <label for="metros-cuadrados">Metros cuadrados:</label>
-            <input type="number" id="metros-cuadrados" name="metros-cuadrados" min="0">
-          </div>
-          <!-- Agrega más filtros según sea necesario -->
-
           <button type="button" onclick="searchProperties()">Buscar</button>
         </form>
       </section>
 
       <section class="search-results" id="results" style="display: none;">
         <h2>Resultados de búsqueda</h2>
-        <!-- Aquí mostrarías los resultados de la búsqueda -->
-        <button class="export-btn">Exportar a Excel</button>
       </section>
     </div>
   </main>
@@ -59,16 +64,46 @@
 
   <script>
     function searchProperties() {
-      // Captura los valores de los filtros
       var numHabitaciones = document.getElementById("num-habitaciones").value;
-      var metrosCuadrados = document.getElementById("metros-cuadrados").value;
-      // Captura más valores de filtros según sea necesario
+      console.log("Número de habitaciones:", numHabitaciones);
 
-      // Envía los valores de los filtros al backend para procesar la búsqueda
-      // Aquí deberías realizar una petición AJAX a tu servidor Flask
+      var formData = new FormData();
+      formData.append('num-habitaciones', numHabitaciones);
 
-      // Una vez que se obtienen los resultados, muestra la sección de resultados
-      document.getElementById("results").style.display = "block";
+      fetch('/search', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Respuesta del servidor:", data);
+        var resultsContainer = document.getElementById("results");
+        resultsContainer.style.display = "block";
+        resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
+
+        if (data.error) {
+          resultsContainer.innerHTML += `<p>${data.error}</p>`;
+        } else {
+          data.forEach(item => {
+            var truncatedDescription = item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description;
+            var resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+              <img src="${item.image_url}" alt="Imagen de propiedad" style="width: 100px; height: auto;">
+              <div>
+                <p>${truncatedDescription}</p>
+                <p>Precio: ${item.price}</p>
+                <a href="${item.url}" target="_blank">Ver más detalles</a>
+              </div>
+            `;
+            resultsContainer.appendChild(resultItem);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
+      });
     }
   </script>
 </body>

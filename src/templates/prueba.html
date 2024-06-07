@@ -1,48 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_index.css' ) }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Búsqueda</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
 </head>
-
 <body>
-    <header>
-        <aside>
-
-        </aside>
-    </header>
+  <header>
     <div class="container">
-        <form action="/index" method="POST">
-            <input type="text" name="web" id="web" placeholder="Introduce página web">
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg>
-            </button>
-        </form>
-        <h1>{{titulo1}}</h1>
+      <h1>Búsqueda de propiedades</h1>
+      <nav>
         <ul>
-            {% for enlace in enlaces_principales %}
-            <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
-            {% endfor %}
+          <li><a href="#">Inicio</a></li>
+          <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+          <li>
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit">Cerrar sesión</button>
+            </form>
+          </li>
         </ul>
-
-        <h1>{{titulo2}}</h1>
-        <ul>
-            {% for enlace in enlaces_secundarios %}
-            <li><a href="{{ enlace.url }}">{{ enlace.url }}</a></li>
-            {% endfor %}
-        </ul>
+      </nav>
     </div>
+  </header>
 
-    <footer>
+  <main>
+    <div class="container">
+      <section class="filters">
+        <h2>Filtros de búsqueda</h2>
+        <form id="search-form">
+          <div class="filter">
+            <label for="num-habitaciones">Número de habitaciones:</label>
+            <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
+          </div>
+          <button type="button" onclick="searchProperties()">Buscar</button>
+        </form>
+      </section>
 
-    </footer>
+      <section class="search-results" id="results" style="display: none;">
+        <h2>Resultados de búsqueda</h2>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 HogarData</p>
+    </div>
+  </footer>
+
+  <script>
+    function searchProperties() {
+      var numHabitaciones = document.getElementById("num-habitaciones").value;
+      console.log("Número de habitaciones:", numHabitaciones);  // Depuración
+
+      var formData = new FormData();
+      formData.append('num-habitaciones', numHabitaciones);
+
+      fetch('/search', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Respuesta del servidor:", data);  // Depuración
+        var resultsContainer = document.getElementById("results");
+        resultsContainer.style.display = "block";
+        resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
+
+        if (data.error) {
+          resultsContainer.innerHTML += `<p>${data.error}</p>`;
+        } else {
+          data.forEach(item => {
+            var resultItem = document.createElement('div');
+            resultItem.innerHTML = `<p><strong>${item.title}</strong><br><a href="${item.link}" target="_blank">Ver más</a></p>`;
+            resultsContainer.appendChild(resultItem);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
+      });
+    }
+  </script>
 </body>
-
 </html>
