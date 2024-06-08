@@ -1,6 +1,8 @@
+from io import BytesIO
+import pandas as pd
 import urllib, urllib.request
 from bs4 import BeautifulSoup
-from flask import Flask, jsonify, render_template, request, redirect, session, url_for
+from flask import Flask, jsonify, render_template, request, redirect, send_file, session, url_for
 from flask_mail import Mail, Message
 import os
 import requests
@@ -92,7 +94,8 @@ def update_profile():
 @app.route('/search', methods=['POST'])
 def search():
     num_habitaciones = request.form.get('num-habitaciones')
-    url = "https://www.pisos.com/venta/pisos-sevilla_capital/"
+    page = request.form.get('page', 1)  # Obtener el número de página, por defecto es 1
+    url = f"https://www.pisos.com/venta/pisos-sevilla_capital/{page}/"
     pisos_data = scrape_pisos(url)
     return jsonify(pisos_data)
 
@@ -150,8 +153,33 @@ def scrape_pisos(url):
 
     return results
 
+@app.route('/export', methods=['POST'])
+def export():
+    try:
+        # Obtener los resultados de la búsqueda desde el JSON de la solicitud
+        search_results = request.json.get('results', [])
 
+        if not search_results:
+            raise ValueError("No se encontraron resultados de búsqueda para exportar.")
 
+        # Crear un DataFrame con los resultados de la búsqueda
+        df = pd.DataFrame(search_results)
+        print("Datos del DataFrame:", df)
+
+        # Crear un buffer para guardar el Excel en memoria
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Resultados')
+        output.seek(0)
+
+        print("Archivo Excel generado exitosamente.")
+        
+        # Enviar el archivo Excel
+        return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                         as_attachment=True, download_name='resultados_busqueda.xlsx')
+    except Exception as e:
+        print(f"Error al exportar a Excel: {e}")
+        return jsonify({"error": "No se pudo exportar a Excel"}), 500
 
 
 
