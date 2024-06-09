@@ -94,9 +94,19 @@ def update_profile():
 @app.route('/search', methods=['POST'])
 def search():
     num_habitaciones = request.form.get('num-habitaciones')
+    superficie = request.form.get('superficie')
     page = request.form.get('page', 1)  # Obtener el número de página, por defecto es 1
-    url = f"https://www.pisos.com/venta/pisos-sevilla_capital/{page}/"
+
+    # Construir la URL de búsqueda con los filtros
+    url = "https://www.pisos.com/venta/pisos-sevilla_capital/"
+    if num_habitaciones and num_habitaciones != "todas":
+        url += f"con-{num_habitaciones}-habitaciones/"
+    if superficie and superficie != "todas":
+        url += f"desde-{superficie}-m2/"
+    url += f"{page}/"
+
     pisos_data = scrape_pisos(url)
+    
     return jsonify(pisos_data)
 
 def scrape_pisos(url):
@@ -144,7 +154,6 @@ def scrape_pisos(url):
             price_element = listing.find('span', class_='ad-preview__price')
             price_text = price_element.text.strip() if price_element else "Precio no disponible"
 
-
             # Extract additional information: rooms, bathrooms, size, floor
             rooms_text = "N/A"
             bathrooms_text = "N/A"
@@ -175,6 +184,9 @@ def scrape_pisos(url):
             })
 
     return results
+
+
+
 
 
 

@@ -41,16 +41,34 @@
 
   <main>
     <div class="container">
-        <section class="filters">
-            <h2>Filtros de búsqueda</h2>
-            <form id="search-form">
-                <div class="filter">
-                    <label for="num-habitaciones">Número de habitaciones:</label>
-                    <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
-                </div>
-                <button type="button" onclick="searchProperties(1)">Buscar</button>
-            </form>
-        </section>
+      <section class="filters">
+        <h2>Filtros de búsqueda</h2>
+        <form id="search-form">
+            <div class="filter">
+                <label for="num-habitaciones">Número de habitaciones:</label>
+                <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
+            </div>
+            <div class="filter">
+                <label for="superficie">Superficie:</label>
+                <select id="superficie" name="superficie">
+                    <option value="todas">Todas</option>
+                    <option value="40">Desde 40 m²</option>
+                    <option value="60">Desde 60 m²</option>
+                    <option value="80">Desde 80 m²</option>
+                    <option value="100">Desde 100 m²</option>
+                    <option value="120">Desde 120 m²</option>
+                    <option value="140">Desde 140 m²</option>
+                    <option value="160">Desde 160 m²</option>
+                    <option value="180">Desde 180 m²</option>
+                    <option value="200">Desde 200 m²</option>
+                    <option value="400">Desde 400 m²</option>
+                    <option value="600">Desde 600 m²</option>
+                </select>
+            </div>
+            <button type="button" onclick="searchProperties(1)">Buscar</button>
+        </form>
+    </section>
+    
 
         <section class="search-results" id="results" style="display: none;">
             <h2>Resultados de búsqueda</h2>
@@ -72,61 +90,63 @@
     let searchResults = [];
 
     function searchProperties(page) {
-        var numHabitaciones = document.getElementById("num-habitaciones").value;
-        console.log("Número de habitaciones:", numHabitaciones, "Página:", page);
+    var numHabitaciones = document.getElementById("num-habitaciones").value;
+    var superficie = document.getElementById("superficie").value;
+    console.log("Número de habitaciones:", numHabitaciones, "Superficie:", superficie, "Página:", page);
 
-        var formData = new FormData();
-        formData.append('num-habitaciones', numHabitaciones);
-        formData.append('page', page);
+    var formData = new FormData();
+    formData.append('num-habitaciones', numHabitaciones);
+    formData.append('superficie', superficie);
+    formData.append('page', page);
 
-        fetch('/search', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Respuesta del servidor:", data);
-            var resultsContainer = document.getElementById("results");
-            resultsContainer.style.display = "block";
-            if (page === 1) {
-                resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
-                searchResults = data;  // Guardar resultados de la búsqueda
-            } else {
-                searchResults = searchResults.concat(data);  // Agregar nuevos resultados a los existentes
-            }
+    fetch('/search', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Respuesta del servidor:", data);
+        var resultsContainer = document.getElementById("results");
+        resultsContainer.style.display = "block";
+        if (page === 1) {
+            resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
+            searchResults = data;  // Guardar resultados de la búsqueda
+        } else {
+            searchResults = searchResults.concat(data);  // Agregar nuevos resultados a los existentes
+        }
 
-            if (data.error) {
-                resultsContainer.innerHTML += `<p>${data.error}</p>`;
-            } else {
-                resultsContainer.innerHTML = ''; // Limpiar resultados anteriores antes de agregar nuevos
-                searchResults.forEach(item => {
-                    var truncatedDescription = item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description;
-                    var resultItem = document.createElement('div');
-                    resultItem.className = 'result-item';
-                    resultItem.innerHTML = `
-                      <img src="${item.image_url}" alt="Imagen de propiedad">
-                      <div class="property-info">
-                        <p>${truncatedDescription}</p>
-                        <p>Precio: ${item.price}</p>
-                        <p>Habitaciones: ${item.rooms}</p>
-                        <p>Baños: ${item.bathrooms}</p>
-                        <p>Metros cuadrados: ${item.size}</p>
-                        <p>Planta: ${item.floor}</p>
-                        <a href="${item.url}" target="_blank">Ver más detalles</a>
-                      </div>
-                    `;
-                    resultsContainer.appendChild(resultItem);
-                });
-                // Mostrar botones "Siguiente" y "Exportar"
-                document.getElementById("next-button").style.display = "block";
-                document.getElementById("export-button").style.display = "block";
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
-        });
-    }
+        if (data.error) {
+            resultsContainer.innerHTML += `<p>${data.error}</p>`;
+        } else {
+            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores antes de agregar nuevos
+            searchResults.forEach(item => {
+                var truncatedDescription = item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description;
+                var resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                  <img src="${item.image_url}" alt="Imagen de propiedad">
+                  <div class="property-info">
+                    <p>${truncatedDescription}</p>
+                    <p>Precio: ${item.price}</p>
+                    <p>Habitaciones: ${item.rooms}</p>
+                    <p>Baños: ${item.bathrooms}</p>
+                    <p>Metros cuadrados: ${item.size}</p>
+                    <p>Planta: ${item.floor}</p>
+                    <a href="${item.url}" target="_blank">Ver más detalles</a>
+                  </div>
+                `;
+                resultsContainer.appendChild(resultItem);
+            });
+            // Mostrar botones "Siguiente" y "Exportar"
+            document.getElementById("next-button").style.display = "block";
+            document.getElementById("export-button").style.display = "block";
+        }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
+            });
+}
 
     function nextPage() {
         currentPage += 1;
