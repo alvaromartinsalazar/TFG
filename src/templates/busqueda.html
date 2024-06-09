@@ -6,30 +6,33 @@
   <title>Búsqueda</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
   <style>
-    /* Estilos para la sección de filtros */
     .filter-section {
-      text-align: center; /* Centra los elementos */
+      text-align: center;
     }
-
-    /* Estilos para los grupos de filtros */
     .filter-group {
       display: inline-block;
-      width: 80%; /* Ocupa el 80% del ancho del contenedor */
-      margin-bottom: 10px; /* Añade margen inferior para separar los grupos */
+      width: 80%;
+      margin-bottom: 10px;
     }
-
-    /* Estilos adicionales para dispositivos móviles */
     @media only screen and (max-width: 600px) {
       .filter-group {
-        width: 100%; /* Ocupa todo el ancho en dispositivos móviles */
+        width: 100%;
+      }
+      .result-item {
+        flex-direction: column;
+      }
+      .property-info {
+        margin-left: 0;
+      }
+      .result-item img {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
       }
     }
-
-    /* Estilos para etiquetas de características seleccionadas */
     .selected-characteristics {
       margin-top: 10px;
     }
-
     .selected-characteristics span {
       display: inline-block;
       margin-right: 5px;
@@ -39,43 +42,49 @@
       color: #fff;
       border-radius: 20px;
     }
-
-    /* Estilos para los resultados */
     .result-item {
-      display: flex; /* Utiliza flexbox para el diseño */
-      align-items: center; /* Alinea verticalmente los elementos */
-      margin-bottom: 20px; /* Añade margen inferior para separar los resultados */
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
     }
-
-    /* Estilos para el div de información de la propiedad */
     .property-info {
-      flex: 1; /* Hace que el div ocupe todo el espacio restante */
-      margin-left: 20px; /* Añade margen derecho para separar la imagen */
+      flex: 1;
+      margin-left: 20px;
     }
-
-    /* Estilos para las imágenes */
     img {
-      max-width: 100%; /* Ajusta el ancho máximo de la imagen */
-      height: auto; /* Permite que la altura se ajuste automáticamente */
+      max-width: 100%;
+      height: auto;
+    }
+    .navbar {
+      background-color: #337ab7 !important;
     }
   </style>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
   <header>
-    <div class="container">
-      <h1>Búsqueda de propiedades</h1>
-      <nav>
-        <ul>
-          <li><a href="#">Inicio</a></li>
-          <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
-          <li>
-            <form action="{{ url_for('logout') }}" method="post">
-                <button type="submit">Cerrar sesión</button>
-            </form>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <a class="navbar-brand" href="#">HogarData</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="#">Inicio</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('perfil') }}">Perfil</a>
+              </li>
+              <li class="nav-item">
+                  <form action="{{ url_for('logout') }}" method="post">
+                      <button type="submit" class="btn btn-link nav-link">Cerrar sesión</button>
+                  </form>
+              </li>
+          </ul>
+      </div>
+    </nav>
   </header>
 
   <main>
@@ -104,7 +113,6 @@
                   <option value="600">Desde 600 m²</option>
               </select>
           </div><br>
-          <!-- Dentro del formulario de filtros -->
           <div class="filter-group">
               <label for="caracteristicas">Características:</label>
               <div class="dropdown-checkbox">
@@ -141,6 +149,11 @@
         <p>&copy; 2024 HogarData</p>
     </div>
   </footer>
+
+  <!-- Bootstrap JS, Popper.js, and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <script>
     let currentPage = 1;
@@ -200,25 +213,60 @@ function searchProperties(page) {
             resultsContainer.innerHTML += `<p>${data.error}</p>`;
         } else {
             resultsContainer.innerHTML = ''; // Limpiar resultados anteriores antes de agregar nuevos
-            searchResults.forEach(item => {
-                var truncatedDescription = item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description;
+            searchResults.forEach((item, index) => {
+                var truncatedDescription = item.description.length > 200 ? item.description.substring(0, 200) + "..." : item.description;
                 var resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
-                resultItem.innerHTML = `
-                <img src="${item.image_url}" alt="Imagen de propiedad">
-                  <div class="property-info">
-                    <p>${truncatedDescription}</p>
-                    <p>Precio: ${item.price}</p>
-                    <p>Habitaciones: ${item.rooms}</p>
-                    <p>Baños: ${item.bathrooms}</p>
-                    <p>Metros cuadrados: ${item.size}</p>
-                    <p>Planta: ${item.floor}</p>
-                    <a href="${item.url}" target="_blank">Ver más detalles</a>
-                  </div>
-                `;
+
+                // Crear carrusel de Bootstrap si hay más de una imagen
+                let images = item.image_urls.split(', ');
+                if (images.length > 1) {
+                    resultItem.innerHTML = `
+                    <div id="carousel${index}" class="carousel slide" data-ride="carousel">
+                      <div class="carousel-inner">
+                        ${images.map((img, imgIndex) => `
+                          <div class="carousel-item ${imgIndex === 0 ? 'active' : ''}">
+                            <img src="${img}" class="d-block w-100" alt="Imagen de propiedad">
+                          </div>
+                        `).join('')}
+                      </div>
+                      <a class="carousel-control-prev" href="#carousel${index}" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                      <a class="carousel-control-next" href="#carousel${index}" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </div>
+                    <div class="property-info">
+                      <p>${truncatedDescription}</p>
+                      <p>Precio: ${item.price}</p>
+                      <p>Habitaciones: ${item.rooms}</p>
+                      <p>Baños: ${item.bathrooms}</p>
+                      <p>Metros cuadrados: ${item.size}</p>
+                      <p>Planta: ${item.floor}</p>
+                      <a href="${item.url}" target="_blank">Ver más detalles</a>
+                    </div>
+                    `;
+                } else {
+                    resultItem.innerHTML = `
+                    <div>
+                      <img src="${images[0]}" alt="Imagen de propiedad">
+                    </div>
+                    <div class="property-info">
+                      <p>${truncatedDescription}</p>
+                      <p>Precio: ${item.price}</p>
+                      <p>Habitaciones: ${item.rooms}</p>
+                      <p>Baños: ${item.bathrooms}</p>
+                      <p>Metros cuadrados: ${item.size}</p>
+                      <p>Planta: ${item.floor}</p>
+                      <a href="${item.url}" target="_blank">Ver más detalles</a>
+                    </div>
+                    `;
+                }
                 resultsContainer.appendChild(resultItem);
             });
-            // Mostrar botones "Siguiente" y "Exportar"
             document.getElementById("next-button").style.display = "block";
             document.getElementById("export-button").style.display = "block";
         }
@@ -257,7 +305,7 @@ function exportToExcel() {
     })
     .catch(error => console.error('Error al exportar a Excel:', error));
 }
-</script>
-<button id="export-button" style="display: none;" onclick="exportToExcel()">Exportar a Excel</button>
+  </script>
+  <button id="export-button" style="display: none;" onclick="exportToExcel()">Exportar a Excel</button>
 </body>
 </html>

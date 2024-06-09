@@ -1,4 +1,5 @@
 from io import BytesIO
+import mysqlx
 import pandas as pd
 import urllib, urllib.request
 from bs4 import BeautifulSoup
@@ -72,24 +73,26 @@ def contacto():
     else:
         return render_template('contacto.html')
 
-@app.route('/perfil')
+@app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
-    if 'user_id' in session:
-        return render_template('perfil.html')
-    return redirect(url_for('login'))
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
-@app.route('/update_profile', methods=['POST'])
-def update_profile():
-    if 'user_id' in session:
-        user_id = session['user_id']
-        email = request.form['email']
-        password = request.form['password']
-        cursor = db.database.cursor()
-        cursor.execute("UPDATE usuarios SET email = %s, password = %s WHERE id = %s", (email, password, user_id))
-        db.database.commit()
-        cursor.close()
+    user_id = session['user_id']
+    cursor = db.database.cursor()
+    cursor.execute("SELECT email, password FROM usuarios WHERE id=%s", (user_id,))
+    user = cursor.fetchone()
+
+    if request.method == 'POST':
+        new_email = request.form['email']
+        new_password = request.form['password']
+        cursor.execute("UPDATE usuarios SET email=%s, password=%s WHERE id=%s", (new_email, new_password, user_id))
+        db.database.commit()  # Deberías confirmar los cambios en la base de datos aquí
         return redirect(url_for('perfil'))
-    return redirect(url_for('login'))
+
+    return render_template('perfil.html', email=user[0], password=user[1])
+
+
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -112,6 +115,7 @@ def search():
     pisos_data = scrape_pisos(url)
     
     return jsonify(pisos_data)
+
 
 def scrape_pisos(url):
     """Scrapes pisos.com for apartment listings and descriptions.
@@ -147,12 +151,15 @@ def scrape_pisos(url):
                 description_text = description_text[:max_length] + "..."
 
             # Handle the image extraction more robustly
-            image_url = ""
-            picture_element = listing.find('picture')
-            if picture_element:
+            image_urls = []
+            picture_elements = listing.find_all('picture')
+            for picture_element in picture_elements:
                 img_element = picture_element.find('img')
                 if img_element and 'src' in img_element.attrs:
-                    image_url = img_element['src']
+                    image_urls.append(img_element['src'])
+
+            # Join image URLs into a single string separated by commas
+            image_urls_str = ', '.join(image_urls)
 
             # Find price element
             price_element = listing.find('span', class_='ad-preview__price')
@@ -179,7 +186,7 @@ def scrape_pisos(url):
             results.append({
                 "url": complete_url,
                 "description": description_text,
-                "image_url": image_url,
+                "image_urls": image_urls_str,
                 "price": price_text,
                 "rooms": rooms_text,
                 "bathrooms": bathrooms_text,
@@ -188,6 +195,9 @@ def scrape_pisos(url):
             })
 
     return results
+
+
+
 
 @app.route('/export', methods=['POST'])
 def export():

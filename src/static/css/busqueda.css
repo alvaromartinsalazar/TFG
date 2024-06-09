@@ -18,12 +18,6 @@ body {
     font-family: sans-serif;
 }
 
-header {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 20px 0;
-}
-
 .container {
     max-width: 1000px;
     margin: 0 auto;
@@ -195,7 +189,7 @@ footer {
 /* Añade las reglas para dispositivos móviles al final del archivo */
 @media only screen and (max-width: 600px) {
     .result-item img {
-        width: 100px !important; /* Ancho de 100px para las imágenes en dispositivos móviles */
+        width: 300px !important; /* Ancho de 100px para las imágenes en dispositivos móviles */
         height: auto !important; /* Mantiene la proporción de la imagen */
     }
 }
