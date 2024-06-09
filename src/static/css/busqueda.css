@@ -124,6 +124,7 @@ nav a {
 .property-info {
     padding: 15px;
     border: 1px solid #ddd;
+    background-color: #f0f0f0; /* Fondo gris para cada piso */
 }
 
 .property-info h3 {
