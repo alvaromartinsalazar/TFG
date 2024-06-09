@@ -6,67 +6,57 @@
   <title>Búsqueda</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
   <style>
-    .result-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-    .result-item img {
-      margin-right: 20px;
-      width: 300px; /* Ancho fijo de 300px para las imágenes */
-      height: auto;
-    }
-    .result-item div {
-      max-width: 70%;
-    }
-    
     /* Estilos para la sección de filtros */
     .filter-section {
-        background-color: #f9f9f9;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-bottom: 20px;
+      text-align: center; /* Centra los elementos */
     }
 
-    .filter-section h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #337ab7;
-    }
-
+    /* Estilos para los grupos de filtros */
     .filter-group {
-        margin-bottom: 15px;
+      display: inline-block;
+      width: 80%; /* Ocupa el 80% del ancho del contenedor */
+      margin-bottom: 10px; /* Añade margen inferior para separar los grupos */
     }
 
-    .filter-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+    /* Estilos adicionales para dispositivos móviles */
+    @media only screen and (max-width: 600px) {
+      .filter-group {
+        width: 100%; /* Ocupa todo el ancho en dispositivos móviles */
+      }
     }
 
-    .filter-group input,
-    .filter-group select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+    /* Estilos para etiquetas de características seleccionadas */
+    .selected-characteristics {
+      margin-top: 10px;
     }
 
-    .filter-section button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background-color: #337ab7;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
+    .selected-characteristics span {
+      display: inline-block;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      background-color: #337ab7;
+      color: #fff;
+      border-radius: 20px;
     }
 
-    .filter-section button:hover {
-        background-color: #286090;
+    /* Estilos para los resultados */
+    .result-item {
+      display: flex; /* Utiliza flexbox para el diseño */
+      align-items: center; /* Alinea verticalmente los elementos */
+      margin-bottom: 20px; /* Añade margen inferior para separar los resultados */
+    }
+
+    /* Estilos para el div de información de la propiedad */
+    .property-info {
+      flex: 1; /* Hace que el div ocupe todo el espacio restante */
+      margin-left: 20px; /* Añade margen derecho para separar la imagen */
+    }
+
+    /* Estilos para las imágenes */
+    img {
+      max-width: 100%; /* Ajusta el ancho máximo de la imagen */
+      height: auto; /* Permite que la altura se ajuste automáticamente */
     }
   </style>
 </head>
@@ -93,29 +83,50 @@
       <section class="filter-section">
         <h2>Filtros de búsqueda</h2>
         <form id="search-form">
-            <div class="filter-group">
-                <label for="num-habitaciones">Número de habitaciones:</label>
-                <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
-            </div>
-            <div class="filter-group">
-                <label for="superficie">Superficie:</label>
-                <select id="superficie" name="superficie">
-                    <option value="todas">Todas</option>
-                    <option value="40">Desde 40 m²</option>
-                    <option value="60">Desde 60 m²</option>
-                    <option value="80">Desde 80 m²</option>
-                    <option value="100">Desde 100 m²</option>
-                    <option value="120">Desde 120 m²</option>
-                    <option value="140">Desde 140 m²</option>
-                    <option value="160">Desde 160 m²</option>
-                    <option value="180">Desde 180 m²</option>
-                    <option value="200">Desde 200 m²</option>
-                    <option value="400">Desde 400 m²</option>
-                    <option value="600">Desde 600 m²</option>
-                </select>
-            </div>
-            <button type="button" onclick="searchProperties(1)">Buscar</button>
-        </form>
+          <div class="filter-group">
+              <label for="num-habitaciones">Número de habitaciones:</label>
+              <input type="number" id="num-habitaciones" name="num-habitaciones" min="1">
+          </div><br>
+          <div class="filter-group">
+              <label for="superficie">Superficie:</label>
+              <select id="superficie" name="superficie">
+                  <option value="todas">Todas</option>
+                  <option value="40">Desde 40 m²</option>
+                  <option value="60">Desde 60 m²</option>
+                  <option value="80">Desde 80 m²</option>
+                  <option value="100">Desde 100 m²</option>
+                  <option value="120">Desde 120 m²</option>
+                  <option value="140">Desde 140 m²</option>
+                  <option value="160">Desde 160 m²</option>
+                  <option value="180">Desde 180 m²</option>
+                  <option value="200">Desde 200 m²</option>
+                  <option value="400">Desde 400 m²</option>
+                  <option value="600">Desde 600 m²</option>
+              </select>
+          </div><br>
+          <!-- Dentro del formulario de filtros -->
+          <div class="filter-group">
+              <label for="caracteristicas">Características:</label>
+              <div class="dropdown-checkbox">
+                  <button type="button" onclick="toggleDropdown()">Seleccionar características</button>
+                  <div id="caracteristicas-dropdown" class="dropdown-content">
+                      <input type="checkbox" id="checkbox-terraza" value="terraza">
+                      <label for="checkbox-terraza">Terraza</label><br>
+                      <input type="checkbox" id="checkbox-ascensor" value="ascensor">
+                      <label for="checkbox-ascensor">Ascensor</label><br>
+                      <input type="checkbox" id="checkbox-piscina" value="piscina">
+                      <label for="checkbox-piscina">Piscina</label><br>
+                      <input type="checkbox" id="checkbox-parking" value="parking">
+                      <label for="checkbox-parking">Garaje</label><br>
+                      <input type="checkbox" id="checkbox-contrastero" value="contrastero">
+                      <label for="checkbox-contrastero">Trastero</label><br>
+                  </div>
+              </div>
+          </div>
+      
+          <div id="checkboxes-container" class="filter-group"></div>
+          <button type="button" onclick="searchProperties(1)">Buscar</button>
+      </form>
       </section>
       
       <section class="search-results" id="results" style="display: none;">
@@ -131,20 +142,42 @@
     </div>
   </footer>
 
-  <button id="export-button" style="display: none;" onclick="exportToExcel()">Exportar a Excel</button>
-
   <script>
     let currentPage = 1;
     let searchResults = [];
 
-    function searchProperties(page) {
+    document.getElementById('caracteristicas').addEventListener('change', function () {
+        const selectedOptions = Array.from(this.selectedOptions).map(option => option.value);
+        const container = document.getElementById('checkboxes-container');
+        container.innerHTML = '';  // Clear existing checkboxes
+
+        selectedOptions.forEach(option => {
+            const checkboxLabel = document.createElement('label');
+            checkboxLabel.innerText = option.charAt(0).toUpperCase() + option.slice(1);
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name
+            container.appendChild(checkboxLabel);
+        container.appendChild(checkbox);
+        container.appendChild(document.createElement('br'));
+    });
+});
+
+function searchProperties(page) {
     var numHabitaciones = document.getElementById("num-habitaciones").value;
     var superficie = document.getElementById("superficie").value;
-    console.log("Número de habitaciones:", numHabitaciones, "Superficie:", superficie, "Página:", page);
+    var caracteristicas = [];
+    document.querySelectorAll('input[name="caracteristicas"]:checked').forEach((checkbox) => {
+        caracteristicas.push(checkbox.value);
+    });
+   
+    console.log("Número de habitaciones:", numHabitaciones, "Superficie:", superficie, "Características:", caracteristicas, "Página:", page);
 
     var formData = new FormData();
     formData.append('num-habitaciones', numHabitaciones);
     formData.append('superficie', superficie);
+    formData.append('caracteristicas', caracteristicas);
     formData.append('page', page);
 
     fetch('/search', {
@@ -172,7 +205,7 @@
                 var resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
                 resultItem.innerHTML = `
-                  <img src="${item.image_url}" alt="Imagen de propiedad">
+                <img src="${item.image_url}" alt="Imagen de propiedad">
                   <div class="property-info">
                     <p>${truncatedDescription}</p>
                     <p>Precio: ${item.price}</p>
@@ -189,41 +222,42 @@
             document.getElementById("next-button").style.display = "block";
             document.getElementById("export-button").style.display = "block";
         }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
-            });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
+    });
 }
 
-    function nextPage() {
-        currentPage += 1;
-        searchProperties(currentPage);
-    }
+function nextPage() {
+    currentPage += 1;
+    searchProperties(currentPage);
+}
 
-    function exportToExcel() {
-        console.log("Datos a exportar:", searchResults);
+function exportToExcel() {
+    console.log("Datos a exportar:", searchResults);
 
-        fetch('/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ results: searchResults })
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = 'resultados_busqueda.xlsx';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error al exportar a Excel:', error));
-    }
-  </script>
+    fetch('/export', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ results: searchResults })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'resultados_busqueda.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error al exportar a Excel:', error));
+}
+</script>
+<button id="export-button" style="display: none;" onclick="exportToExcel()">Exportar a Excel</button>
 </body>
 </html>

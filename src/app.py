@@ -95,6 +95,7 @@ def update_profile():
 def search():
     num_habitaciones = request.form.get('num-habitaciones')
     superficie = request.form.get('superficie')
+    caracteristicas = request.form.getlist('caracteristicas[]')
     page = request.form.get('page', 1)  # Obtener el número de página, por defecto es 1
 
     # Construir la URL de búsqueda con los filtros
@@ -103,6 +104,9 @@ def search():
         url += f"con-{num_habitaciones}-habitaciones/"
     if superficie and superficie != "todas":
         url += f"desde-{superficie}-m2/"
+    if caracteristicas:
+        for caracteristica in caracteristicas:
+            url += f"{caracteristica}/"
     url += f"{page}/"
 
     pisos_data = scrape_pisos(url)
@@ -185,11 +189,6 @@ def scrape_pisos(url):
 
     return results
 
-
-
-
-
-
 @app.route('/export', methods=['POST'])
 def export():
     try:
@@ -217,8 +216,6 @@ def export():
     except Exception as e:
         print(f"Error al exportar a Excel: {e}")
         return jsonify({"error": "No se pudo exportar a Excel"}), 500
-
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -265,3 +265,59 @@ footer {
 .filter-section button:hover {
     background-color: #286090;
 }
+
+.dropdown-checkbox {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-checkbox button {
+    background-color: #337ab7;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .dropdown-checkbox button:hover {
+    background-color: #286090;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    z-index: 1;
+    padding: 10px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  }
+  
+  .dropdown-content input[type="checkbox"] {
+    margin-right: 5px;
+  }
+  
+  .dropdown-content label {
+    display: block;
+  }
+  
+  .dropdown-content input[type="checkbox"]:checked + label {
+    font-weight: bold;
+  }
+  
+  .dropdown-content input[type="checkbox"]:hover + label {
+    background-color: #e9e9e9;
+  }
+  
+  /* Mostrar el desplegable cuando se pasa el ratón por encima */
+  .dropdown-checkbox:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Asegurar que el desplegable esté alineado correctamente */
+  .dropdown-checkbox button, .dropdown-content {
+    text-align: left;
+  }
