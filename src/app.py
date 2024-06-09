@@ -144,14 +144,39 @@ def scrape_pisos(url):
             price_element = listing.find('span', class_='ad-preview__price')
             price_text = price_element.text.strip() if price_element else "Precio no disponible"
 
+
+            # Extract additional information: rooms, bathrooms, size, floor
+            rooms_text = "N/A"
+            bathrooms_text = "N/A"
+            size_text = "N/A"
+            floor_text = "N/A"
+
+            details = listing.find_all('p', class_='ad-preview__char')
+            for detail in details:
+                text = detail.text.strip()
+                if 'habs.' in text:
+                    rooms_text = text.split()[0]
+                elif 'baños' in text:
+                    bathrooms_text = text.split()[0]
+                elif 'm²' in text:
+                    size_text = text.split()[0]
+                elif 'planta' in text:
+                    floor_text = text.split()[0]
+
             results.append({
                 "url": complete_url,
                 "description": description_text,
                 "image_url": image_url,
-                "price": price_text
+                "price": price_text,
+                "rooms": rooms_text,
+                "bathrooms": bathrooms_text,
+                "size": size_text,
+                "floor": floor_text
             })
 
     return results
+
+
 
 @app.route('/export', methods=['POST'])
 def export():

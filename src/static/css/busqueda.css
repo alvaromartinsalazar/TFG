@@ -13,7 +13,6 @@ main {
     overflow: auto; /* Agrega un desplazamiento si el contenido es más largo que la altura de la ventana */
 }
 
-
 body {
     background-color: #fff;
     font-family: sans-serif;
@@ -190,4 +189,29 @@ footer {
 
 .login-btn button:hover {
     background-color: #0056b3;
+}
+
+/* Añade las reglas para dispositivos móviles al final del archivo */
+@media only screen and (max-width: 600px) {
+    .result-item img {
+        width: 100px !important; /* Ancho de 100px para las imágenes en dispositivos móviles */
+        height: auto !important; /* Mantiene la proporción de la imagen */
+    }
+}
+
+/* Estilos para el botón de exportar */
+#export-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#export-button:hover {
+    background-color: #218838;
 }
