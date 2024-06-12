@@ -315,3 +315,89 @@ footer {
   .dropdown-checkbox button, .dropdown-content {
     text-align: left;
   }
+
+  .carousel {
+    width: 300px;
+    height: 300px;
+  }
+
+  .carousel img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+  }
+
+
+#map{
+    height: 300px;
+    width: 300px;
+}
+
+
+.filter-section {
+    text-align: center;
+  }
+  .filter-group {
+    display: inline-block;
+    width: 80%;
+    margin-bottom: 10px;
+  }
+  @media only screen and (max-width: 600px) {
+    .filter-group {
+      width: 100%;
+    }
+    .result-item {
+      flex-direction: column;
+    }
+    .property-info {
+      margin-left: 0;
+    }
+    .result-item img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+    }
+  }
+  .selected-characteristics {
+    margin-top: 10px;
+  }
+  .selected-characteristics span {
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    background-color: #337ab7;
+    color: #fff;
+    border-radius: 20px;
+  }
+  .result-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .property-info {
+    flex: 1;
+    margin-left: 20px;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  .navbar {
+    background-color: #337ab7 !important;
+  }
+  #habitacion-filtro{
+    width: 15%;
+  }
+
+  #next-button {
+    display: block;
+    margin: 20px auto; /* Esto centra el botón horizontalmente */
+    border-radius: 20px; /* Esto redondea las esquinas del botón */
+    padding: 10px 20px; /* Esto agrega relleno al botón */
+    background-color: #337ab7;
+  }
+
+  #next-button:hover {
+    background-color: #007bff; /* Cambia el color de fondo al pasar el cursor sobre el botón */
+  }

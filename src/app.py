@@ -4,24 +4,46 @@ import pandas as pd
 import urllib, urllib.request
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, render_template, request, redirect, send_file, session, url_for
-from flask_mail import Mail, Message
 import os
 import requests
 import database as db
+from sparkpost import SparkPost
+
 
 template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 template_dir = os.path.join(template_dir, 'src', 'templates')
 
 app = Flask(__name__, template_folder=template_dir)
 
-# Configuración para Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'pruebasmail.alvaro@gmail.com'
-app.config['MAIL_PASSWORD'] = os.environ.get('PASSWORD')
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
+SPARKPOST_API_KEY = '450dc7ec7fbc0ec5b1c1d9c9dd9b6d2e7ffa5ce7'  # Reemplazar con tu clave de API de SparkPost
+@app.route('/contacto', methods=['GET', 'POST'])
+def contacto():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        email = request.form['email']
+        asunto = request.form['asunto']  # Obtener el asunto del formulario
+        mensaje = request.form['mensaje']
+        
+        try:
+            # Crear un objeto SparkPost para enviar el correo electrónico
+            sparkpost = SparkPost(SPARKPOST_API_KEY)
+
+            # Enviar el correo electrónico utilizando la API de SparkPost
+            response = sparkpost.transmissions.send(
+                recipients=[{'address': 'alvaro.martin.salazar@iesciudadjardin.com'}],  # Cambia la dirección de correo
+                content={
+                    'from': email,
+                    'subject': asunto,  # Utilizar el asunto proporcionado por el usuario
+                    'text': f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}'
+                }
+            )
+            return redirect(url_for('contacto_exitoso'))  # Redirigir a una página de éxito
+        except Exception as e:
+            print('Error al enviar el correo electrónico:', e)
+            return 'Error al enviar el correo electrónico. Inténtalo de nuevo más tarde.'
+    else:
+        return render_template('contacto.html')
+
 
 @app.route('/')
 def home():
@@ -54,44 +76,6 @@ def login():
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
     return render_template('index.html')
-
-@app.route('/contacto', methods=['GET', 'POST'])
-def contacto():
-    if request.method == ['POST']:
-        nombre = request.form['nombre']
-        email = request.form['email']
-        mensaje = request.form['mensaje']
-        msg = Message(subject='Mensaje de contacto desde HogarData',
-                      recipients=['alvaromartinsalazar@gmail.com'],
-                      body=f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}')
-        try:
-            mail.send(msg)
-            return redirect(url_for('contacto_exitoso'))
-        except Exception as e:
-            print('Error al enviar el correo electrónico:', e)
-            return 'Error al enviar el correo electrónico. Inténtalo de nuevo más tarde.'
-    else:
-        return render_template('contacto.html')
-
-@app.route('/perfil', methods=['GET', 'POST'])
-def perfil():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user_id = session['user_id']
-    cursor = db.database.cursor()
-    cursor.execute("SELECT email, password FROM usuarios WHERE id=%s", (user_id,))
-    user = cursor.fetchone()
-
-    if request.method == 'POST':
-        new_email = request.form['email']
-        new_password = request.form['password']
-        cursor.execute("UPDATE usuarios SET email=%s, password=%s WHERE id=%s", (new_email, new_password, user_id))
-        db.database.commit()  # Deberías confirmar los cambios en la base de datos aquí
-        return redirect(url_for('perfil'))
-
-    return render_template('perfil.html', email=user[0], password=user[1])
-
 
 
 @app.route('/search', methods=['POST'])
@@ -152,11 +136,13 @@ def scrape_pisos(url):
 
             # Handle the image extraction more robustly
             image_urls = []
-            picture_elements = listing.find_all('picture')
-            for picture_element in picture_elements:
-                img_element = picture_element.find('img')
-                if img_element and 'src' in img_element.attrs:
-                    image_urls.append(img_element['src'])
+            carousel_slides = listing.find_all('div', class_='carousel__main-photo carousel__main-photo--as-img')
+            for slide in carousel_slides:
+                picture_elements = slide.find_all('picture')
+                for picture_element in picture_elements:
+                    img_element = picture_element.find('img')
+                    if img_element and 'data-src' in img_element.attrs:
+                        image_urls.append(img_element['data-src'])
 
             # Join image URLs into a single string separated by commas
             image_urls_str = ', '.join(image_urls)
@@ -199,6 +185,7 @@ def scrape_pisos(url):
 
 
 
+
 @app.route('/export', methods=['POST'])
 def export():
     try:
@@ -226,6 +213,58 @@ def export():
     except Exception as e:
         print(f"Error al exportar a Excel: {e}")
         return jsonify({"error": "No se pudo exportar a Excel"}), 500
+    
+    
+
+
+
+
+
+# Función para obtener el HTML de la página web (simulado)
+def obtener_html_pagina():
+    # Este es solo un ejemplo simulado del HTML de la página web
+    html = """
+    <div class="location" data-url="/components/locationmap" data-params="languageId=1&amp;latitude=37.3845&amp;longitude=-5.9151588&amp;zoom=16&amp;showMarker=False&amp;showCircle=True&amp;circleRadius=350">
+        <img alt="mapa" data-toggle="modalsheet" data-target="locationModal" width="320" height="180" src="https://map.imghs.net/Cache/Z2R35MG0MC1/2_350_37.3845@-5.9151588_0_1.gif" />
+        <div class="location__ask-address">
+            <span>La ubicación es aproximada</span>
+            <button class="button button--s button--darkblue js-contactBtn" data-contactpos="Map">Preguntar la dirección</button>
+        </div>
+    </div>
+    """
+    return html
+
+# Función para obtener el elemento HTML location_div
+def obtener_location_div():
+    html = obtener_html_pagina()  # Obtener el HTML de la página
+    soup = BeautifulSoup(html, 'html.parser')  # Crear un objeto BeautifulSoup
+    location_div = soup.find('div', class_='location')  # Encontrar el div con la clase 'location'
+    return location_div
+
+# Ruta en Flask para procesar la solicitud y devolver las coordenadas
+@app.route('/ruta')
+def obtener_coordenadas():
+    location_div = obtener_location_div()  # Obtener el elemento HTML 'location_div'
+
+    if location_div:
+        # Extraer los datos de los atributos 'data-params'
+        data_params = location_div.get('data-params', '')
+        params_list = data_params.split('&')
+        params_dict = {}
+        for param in params_list:
+            key, value = param.split('=')
+            params_dict[key] = value
+
+        # Obtener las coordenadas geográficas (latitud y longitud)
+        latitude = params_dict.get('latitude')
+        longitude = params_dict.get('longitude')
+
+        # Devolver las coordenadas como un JSON
+        return jsonify({'latitude': latitude, 'longitude': longitude})
+    else:
+        # Si no se encuentra el elemento location_div, devolver un mensaje de error
+        return jsonify({'error': 'No se encontró el elemento location_div'})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
