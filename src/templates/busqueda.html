@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Búsqueda</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/busqueda.css') }}">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""/>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -78,6 +75,12 @@
                   </div>
               </div>
           </div>
+          <div class="filter-group">
+            <label for="precioMin">Precio mínimo:</label>
+            <input type="number" id="precioMin" name="precioMin" min="0">
+            <label for="precioMax">Precio máximo:</label>
+            <input type="number" id="precioMax" name="precioMax" min="0">
+          </div>
       
           <div id="checkboxes-container" class="filter-group"></div>
           <button type="button" onclick="searchProperties(1)">Buscar</button>
@@ -129,153 +132,137 @@ function searchProperties(page) {
     var superficie = document.getElementById("superficie").value;
     var caracteristicas = [];
     document.querySelectorAll('input[name="caracteristicas"]:checked').forEach((checkbox) => {
-        caracteristicas.push(checkbox.value);
+      caracteristicas.push(checkbox.value);
     });
-   
-    console.log("Número de habitaciones:", numHabitaciones, "Superficie:", superficie, "Características:", caracteristicas, "Página:", page);
+
+    var precioMin = document.getElementById("precioMin").value;
+    var precioMax = document.getElementById("precioMax").value;
+
+    console.log("Número de habitaciones:", numHabitaciones, "Superficie:", superficie, "Características:", caracteristicas, "Precio Mínimo:", precioMin, "Precio Máximo:", precioMax, "Página:", page);
 
     var formData = new FormData();
     formData.append('num-habitaciones', numHabitaciones);
     formData.append('superficie', superficie);
     formData.append('caracteristicas', caracteristicas);
+    formData.append('precioMin', precioMin);
+    formData.append('precioMax', precioMax);
     formData.append('page', page);
 
     fetch('/search', {
-        method: 'POST',
-        body: formData
+      method: 'POST',
+      body: formData
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Respuesta del servidor:", data);
-        var resultsContainer = document.getElementById("results");
-        resultsContainer.style.display = "block";
-        if (page === 1) {
-            resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
-            searchResults = data;  // Guardar resultados de la búsqueda
-        } else {
-            searchResults = searchResults.concat(data);  // Agregar nuevos resultados a los existentes
-        }
+      console.log("Respuesta del servidor:", data);
+      var resultsContainer = document.getElementById("results");
+      resultsContainer.style.display = "block";
+      if (page === 1) {
+        resultsContainer.innerHTML = '<h2>Resultados de búsqueda</h2>';
+        searchResults = data;
+      } else {
+        searchResults = searchResults.concat(data);
+      }
 
-        if (data.error) {
-            resultsContainer.innerHTML += `<p>${data.error}</p>`;
-        } else {
-            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores antes de agregar nuevos
-            searchResults.forEach((item, index) => {
-    var truncatedDescription = item.description.length > 200 ? item.description.substring(0, 200) + "..." : item.description;
-    var resultItem = document.createElement('div');
-    resultItem.className = 'result-item';
+      if (data.error) {
+        resultsContainer.innerHTML += `<p>${data.error}</p>`;
+      } else {
+        resultsContainer.innerHTML = '';
+        searchResults.forEach((item, index) => {
+          var truncatedDescription = item.description.length > 200 ? item.description.substring(0, 200) + "..." : item.description;
+          var resultItem = document.createElement('div');
+          resultItem.className = 'result-item';
 
-    // Crear carrusel de Bootstrap si hay más de una imagen
-    let images = item.image_urls.split(', ');
-    if (images.length > 1) {
-        resultItem.innerHTML = `
-        <div id="carousel${index}" class="carousel slide" data-ride="carousel">
-            <div class="carousel-inner">
-                ${images.map((img, imgIndex) => `
+          let images = item.image_urls.split(', ');
+          if (images.length > 1) {
+            resultItem.innerHTML = `
+              <div id="carousel${index}" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                  ${images.map((img, imgIndex) => `
                     <div class="carousel-item ${imgIndex === 0 ? 'active' : ''}">
-                        <img src="${img}" class="d-block w-100" alt="Imagen de propiedad">
+                      <img src="${img}" class="d-block w-100" alt="Imagen de propiedad">
                     </div>
-                `).join('')}
-            </div>
-            <a class="carousel-control-prev" href="#carousel${index}" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carousel${index}" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-        <div class="property-info">
-            <p>${truncatedDescription}</p>
-            <p>Precio: ${item.price}</p>
-            <p>Habitaciones: ${item.rooms}</p>
-            <p>Baños: ${item.bathrooms}</p>
-            <p>Metros cuadrados: ${item.size}</p>
-            <p>Planta: ${item.floor}</p>
-            <a href="${item.url}" target="_blank">Ver más detalles</a>
-        </div>
-        `;
-    } else {
-        resultItem.innerHTML = `
-        <div>
-            <img src="${images[0]}" alt="Imagen de propiedad">
-        </div>
-        <div class="property-info">
-            <p>${truncatedDescription}</p>
-            <p>Precio: ${item.price}</p>
-            <p>Habitaciones: ${item.rooms}</p>
-            <p>Baños: ${item.bathrooms}</p>
-            <p>Metros cuadrados: ${item.size}</p>
-            <p>Planta: ${item.floor}</p>
-            <a href="${item.url}" target="_blank">Ver más detalles</a>
-        </div>
-        `;
-    }
-    resultsContainer.appendChild(resultItem);
-});
+                  `).join('')}
+                </div>
+                <a class="carousel-control-prev" href="#carousel${index}" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel${index}" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </div>
+              <div class="property-info">
+                <p>${truncatedDescription}</p>
+                <p class="negrita">Precio: ${item.price}</p>
+                <p class="negrita">Habitaciones: ${item.rooms}</p>
+                <p class="negrita">Baños: ${item.bathrooms}</p>
+                <p class="negrita">Metros cuadrados: ${item.size}</p>
+                <p class="negrita">Planta: ${item.floor}</p>
+                <p class="negrita">Ubicación: ${item.location}</p> <!-- Mostrar ubicación -->
+                <a href="${item.url}" target="_blank">Ver más detalles</a>
+              </div>
+            `;
+          } else {
+            resultItem.innerHTML = `
+              <div>
+                <img src="${images[0]}" alt="Imagen de propiedad">
+              </div>
+              <div class="property-info">
+                <p>${truncatedDescription}</p>
+                <p class="negrita">Precio: ${item.price}</p>
+                <p class="negrita">Habitaciones: ${item.rooms}</p>
+                <p class="negrita">Baños: ${item.bathrooms}</p>
+                <p class="negrita">Metros cuadrados: ${item.size}</p>
+                <p class="negrita">Planta: ${item.floor}</p>
+                <p class="negrita">Ubicación: ${item.location}</p> <!-- Mostrar ubicación -->
+                <a href="${item.url}" target="_blank">Ver más detalles</a>
+              </div>
+            `;
+          }
+          resultsContainer.appendChild(resultItem);
+        });
 
-            document.getElementById("next-button").style.display = "block";
-            document.getElementById("export-button").style.display = "block";
-        }
+        document.getElementById("next-button").style.display = "block";
+        document.getElementById("export-button").style.display = "block";
+      }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
+      console.error('Error:', error);
+      alert('Error al realizar la búsqueda. Inténtalo de nuevo más tarde.');
     });
-}
+  }
 
-function nextPage() {
+  function nextPage() {
     currentPage += 1;
     searchProperties(currentPage);
-}
+  }
 
-function exportToExcel() {
+  function exportToExcel() {
     console.log("Datos a exportar:", searchResults);
 
     fetch('/export', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ results: searchResults })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ results: searchResults })
     })
     .then(response => response.blob())
     .then(blob => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = 'resultados_busqueda.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'resultados_busqueda.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
     })
     .catch(error => console.error('Error al exportar a Excel:', error));
-}
+  }
   </script>
   <button id="export-button" style="display: none;" onclick="exportToExcel()">Exportar a Excel</button>
 </body>
-<div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin=""></script>
-  <script>
-       // Las coordenadas que has scrapeado, por ejemplo:
-    let latitude = 4.639386;
-    let longitude = -74.082412;
-
-    // Crear el mapa con las coordenadas scrapeadas
-    let map = L.map('map').setView([latitude, longitude], 13);
-
-    // Agregar el mapa base desde OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Puedes agregar un marcador en la ubicación si lo deseas
-    L.marker([latitude, longitude]).addTo(map)
-        .bindPopup('Ubicación').openPopup();
-  </script>
 </html>

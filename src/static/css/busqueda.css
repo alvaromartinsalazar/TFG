@@ -420,3 +420,7 @@ footer {
 .fixed-button:hover {
     background-color: #0056b3;
 }
+
+.negrita{
+  font-weight: bold;
+}

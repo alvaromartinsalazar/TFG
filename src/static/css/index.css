@@ -1,185 +1,189 @@
 body {
-    background-color: #fff;
-    font-family: sans-serif;
-  }
-  
-  header {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 20px 0;
-
-  }
-  
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-    align-items: center;
-  }
-
-  .container:first-of-type li:hover{
-    text-shadow: 1px 1px 1px black;
-  }
-  
-  nav {
-    display: flex;
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center;
-  }
-  
-  nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-  
-  nav li {
-    display: inline-block;
-    margin: 0 20px;
-  }
-  
-  nav a {
-    color: #fff;
-    text-decoration: none;
-  }
-
-  nav button:hover{
-    cursor: pointer;
-  }
-  
-  .logo {
-    text-align: center;
-  }
-  
-  .logo img {
-    width: 100px;
-    height: auto;
-  }
-  
-  .hero {
-    background-color: #f0f0f0;
-    padding: 50px 0;
-  }
-  
-  .hero-content {
-    text-align: center;
-  }
-  
-  .hero-content h1 {
-    font-size: 36px;
-    margin-bottom: 20px;
-  }
-  
-  .hero-content p {
-    font-size: 16px;
-    line-height: 1.5;
-    margin-bottom: 20px;
-  }
-  
-  .hero-content button {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .properties {
-    padding: 50px 0;
-  }
-  
-  .properties h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .properties-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .property {
-    width: 300px; /* Ajustar ancho según sea necesario */
-    margin-bottom: 20px;
-  }
-  
-  .property img {
-    width: 100%;
-    height: auto;
-    border: 1px solid #ddd;
-  }
-  
-  .property-info {
-    padding: 15px;
-    border: 1px solid #ddd;
-  }
-  
-  .property-info h3 {
-    margin-bottom: 10px;
-  }
-  
-  .property-info p {
-    margin-bottom: 10px;
-  }
-  
-  .property-info .price {
-    font-weight: bold;
-  }
-  
-  .about {
-    background-color: #f0f0f0;
-    padding: 50px 0;
-  }
-  
-  .about h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .about p {
-    text-align: center;
-    line-height: 1.5;
-  }
-  
-  .about button {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    margin: 20px auto;
-    display: block;
-  }
-  
-  footer {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
-  }
-  
-
-  .login-btn {
-    position: relative;
+  background-color: #fff;
+  font-family: sans-serif;
 }
-  
+
+header {
+  background-color: #337ab7;
+  color: #fff;
+  padding: 20px 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  align-items: center;
+}
+
+.container:first-of-type li:hover {
+  text-shadow: 1px 1px 1px black;
+}
+
+nav {
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+nav li {
+  display: inline-block;
+  margin: 0 20px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+}
+
+nav button:hover {
+  cursor: pointer;
+}
+
+.logo {
+  text-align: center;
+}
+
+.logo img {
+  width: 100px;
+  height: auto;
+}
+
+.hero {
+  background-color: #f0f0f0;
+  padding: 50px 0;
+}
+
+.hero-content {
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.hero-content button {
+  background-color: #337ab7;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.properties {
+  padding: 50px 0;
+}
+
+.properties h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.property {
+  width: 300px; /* Ajustar ancho según sea necesario */
+  margin-bottom: 20px;
+}
+
+.property img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+}
+
+.property-info {
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.property-info h3 {
+  margin-bottom: 10px;
+}
+
+.property-info p {
+  margin-bottom: 10px;
+}
+
+.property-info .price {
+  font-weight: bold;
+}
+
+.about {
+  background-color: #f0f0f0;
+  padding: 50px 0;
+}
+
+.about h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.about p {
+  text-align: center;
+  line-height: 1.5;
+}
+
+.about button {
+  background-color: #337ab7;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin: 20px auto;
+  display: block;
+}
+
+footer {
+  background-color: #337ab7;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.login-btn {
+  position: relative;
+}
+
 .login-btn button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
 }
-  
+
 .login-btn button a {
-    color: #fff;
-    text-decoration: none;
+  color: #fff;
+  text-decoration: none;
 }
-  
+
 .login-btn button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  display: inline-block;
+  margin: 0;  /* Asegúrate de que no haya margen */
+  padding: 0; /* Asegúrate de que no haya padding */
 }
 
 .btn-secondary button {
@@ -188,11 +192,16 @@ body {
   color: #fff;
   border: none;
   border-radius: 5px;
+  display: inline-block;
+  margin: 0;
+  text-align: center;
+  width: 100%;  /* Asegúrate de que el botón ocupe todo el ancho del contenedor */
 }
 
 .btn-secondary button a {
   color: #fff;
   text-decoration: none;
+  display: block;
 }
 
 .btn-secondary button:hover {
@@ -206,7 +215,11 @@ body {
   margin-top: 20px;
 }
 
-#map{
+#map {
   width: 50%;
   height: 250px;
+}
+
+.about{
+  text-align: center;
 }

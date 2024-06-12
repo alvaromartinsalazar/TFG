@@ -1,14 +1,11 @@
 from io import BytesIO
-import mysqlx
 import pandas as pd
-import urllib, urllib.request
 from bs4 import BeautifulSoup
-from flask import Flask, jsonify, render_template, request, redirect, send_file, session, url_for
+from flask import Flask, jsonify, render_template, request, redirect, send_file, url_for
 import os
 import requests
 import database as db
 from sparkpost import SparkPost
-
 
 template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 template_dir = os.path.join(template_dir, 'src', 'templates')
@@ -16,6 +13,7 @@ template_dir = os.path.join(template_dir, 'src', 'templates')
 app = Flask(__name__, template_folder=template_dir)
 
 SPARKPOST_API_KEY = '450dc7ec7fbc0ec5b1c1d9c9dd9b6d2e7ffa5ce7'  # Reemplazar con tu clave de API de SparkPost
+
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
     if request.method == 'POST':
@@ -44,7 +42,6 @@ def contacto():
     else:
         return render_template('contacto.html')
 
-
 @app.route('/')
 def home():
     cursor = db.database.cursor()
@@ -55,6 +52,8 @@ def home():
     for record in myresult:
         insertObject.append(dict(zip(columnNames, record)))
     cursor.close()
+
+    # Pasar las URL de las imágenes a la plantilla
     return render_template('index.html', data=insertObject)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -77,48 +76,46 @@ def login():
 def logout():
     return render_template('index.html')
 
-
-@app.route('/search', methods=['POST'])
 @app.route('/search', methods=['POST'])
 def search():
     num_habitaciones = request.form.get('num-habitaciones')
     superficie = request.form.get('superficie')
     caracteristicas = request.form.getlist('caracteristicas[]')
-    page = request.form.get('page', 1)  # Obtener el número de página, por defecto es 1
+    precio_min = request.form.get('precioMin')
+    precio_max = request.form.get('precioMax')
+    page = request.form.get('page', 1)
 
     # Construir la URL de búsqueda con los filtros
-    url = "https://www.pisos.com/venta/pisos-sevilla_capital/"
+    base_url = "https://www.pisos.com/venta/pisos-sevilla_capital/"
+    if "terraza" in caracteristicas:
+        url = f"{base_url}terraza/"
+        caracteristicas.remove("terraza")
+    else:
+        url = base_url
+
     if num_habitaciones and num_habitaciones != "todas":
         url += f"con-{num_habitaciones}-habitaciones/"
     if superficie and superficie != "todas":
         url += f"desde-{superficie}-m2/"
+    if precio_min:
+        url += f"desde-{precio_min}/"
+    if precio_max:
+        url += f"hasta-{precio_max}/"
     if caracteristicas:
         for caracteristica in caracteristicas:
             url += f"{caracteristica}/"
     url += f"{page}/"
 
-    pisos_data = scrape_pisos(url, num_habitaciones)
+    pisos_data = scrape_pisos(url)
     
     return jsonify(pisos_data)
 
-
-
-def scrape_pisos(url, num_habitaciones=None):
-    """Scrapes pisos.com for apartment listings and descriptions.
-
-    Args:
-        url (str): The URL of the pisos.com listings page.
-        num_habitaciones (str): The number of rooms to filter by.
-
-    Returns:
-        list: A list of dictionaries containing scraped URLs, descriptions, image URLs, and prices.
-    """
+def scrape_pisos(url):
     results = []
     r = requests.get(url)
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.content, 'html.parser')
 
-    # Find all listings
-    listings = soup.find_all('div', class_='ad-preview')  # Adjust class if necessary
+    listings = soup.find_all('div', class_='ad-preview')
 
     for listing in listings:
         link = listing.find('a', class_='ad-preview__title')
@@ -127,17 +124,12 @@ def scrape_pisos(url, num_habitaciones=None):
             complete_url = "https://www.pisos.com" + href
 
             description_element = listing.find('p', class_='ad-preview__description')
-            if description_element:
-                description_text = description_element.text.strip()
-            else:
-                description_text = "Descripción no disponible."
+            description_text = description_element.text.strip() if description_element else "Descripción no disponible."
 
-            # Truncate description if it's too long
-            max_length = 100  # You can set this to the desired length
+            max_length = 100
             if len(description_text) > max_length:
                 description_text = description_text[:max_length] + "..."
 
-            # Handle the image extraction more robustly
             image_urls = []
             carousel_slides = listing.find_all('div', class_='carousel__main-photo carousel__main-photo--as-img')
             for slide in carousel_slides:
@@ -147,14 +139,11 @@ def scrape_pisos(url, num_habitaciones=None):
                     if img_element and 'data-src' in img_element.attrs:
                         image_urls.append(img_element['data-src'])
 
-            # Join image URLs into a single string separated by commas
             image_urls_str = ', '.join(image_urls)
 
-            # Find price element
             price_element = listing.find('span', class_='ad-preview__price')
             price_text = price_element.text.strip() if price_element else "Precio no disponible"
 
-            # Extract additional information: rooms, bathrooms, size, floor
             rooms_text = "N/A"
             bathrooms_text = "N/A"
             size_text = "N/A"
@@ -172,24 +161,24 @@ def scrape_pisos(url, num_habitaciones=None):
                 elif 'planta' in text:
                     floor_text = text.split()[0]
 
-            # Filter by number of rooms if specified
-            if num_habitaciones is None or rooms_text == num_habitaciones:
-                results.append({
-                    "url": complete_url,
-                    "description": description_text,
-                    "image_urls": image_urls_str,
-                    "price": price_text,
-                    "rooms": rooms_text,
-                    "bathrooms": bathrooms_text,
-                    "size": size_text,
-                    "floor": floor_text
-                })
+            # Extraer la ubicación
+            location_element = listing.find('p', class_='p-sm ad-preview__subtitle')
+            location_text = location_element.text.strip() if location_element else "Ubicación no disponible"
+
+            result = {
+                'url': complete_url,
+                'description': description_text,
+                'image_urls': image_urls_str,
+                'price': price_text,
+                'rooms': rooms_text,
+                'bathrooms': bathrooms_text,
+                'size': size_text,
+                'floor': floor_text,
+                'location': location_text
+            }
+            results.append(result)
 
     return results
-
-
-
-
 
 
 @app.route('/export', methods=['POST'])
@@ -219,58 +208,9 @@ def export():
     except Exception as e:
         print(f"Error al exportar a Excel: {e}")
         return jsonify({"error": "No se pudo exportar a Excel"}), 500
-    
-    
 
-
-
-
-
-# Función para obtener el HTML de la página web (simulado)
-def obtener_html_pagina():
-    # Este es solo un ejemplo simulado del HTML de la página web
-    html = """
-    <div class="location" data-url="/components/locationmap" data-params="languageId=1&amp;latitude=37.3845&amp;longitude=-5.9151588&amp;zoom=16&amp;showMarker=False&amp;showCircle=True&amp;circleRadius=350">
-        <img alt="mapa" data-toggle="modalsheet" data-target="locationModal" width="320" height="180" src="https://map.imghs.net/Cache/Z2R35MG0MC1/2_350_37.3845@-5.9151588_0_1.gif" />
-        <div class="location__ask-address">
-            <span>La ubicación es aproximada</span>
-            <button class="button button--s button--darkblue js-contactBtn" data-contactpos="Map">Preguntar la dirección</button>
-        </div>
-    </div>
-    """
-    return html
-
-# Función para obtener el elemento HTML location_div
-def obtener_location_div():
-    html = obtener_html_pagina()  # Obtener el HTML de la página
-    soup = BeautifulSoup(html, 'html.parser')  # Crear un objeto BeautifulSoup
-    location_div = soup.find('div', class_='location')  # Encontrar el div con la clase 'location'
-    return location_div
-
-# Ruta en Flask para procesar la solicitud y devolver las coordenadas
-@app.route('/ruta')
-def obtener_coordenadas():
-    location_div = obtener_location_div()  # Obtener el elemento HTML 'location_div'
-
-    if location_div:
-        # Extraer los datos de los atributos 'data-params'
-        data_params = location_div.get('data-params', '')
-        params_list = data_params.split('&')
-        params_dict = {}
-        for param in params_list:
-            key, value = param.split('=')
-            params_dict[key] = value
-
-        # Obtener las coordenadas geográficas (latitud y longitud)
-        latitude = params_dict.get('latitude')
-        longitude = params_dict.get('longitude')
-
-        # Devolver las coordenadas como un JSON
-        return jsonify({'latitude': latitude, 'longitude': longitude})
-    else:
-        # Si no se encuentra el elemento location_div, devolver un mensaje de error
-        return jsonify({'error': 'No se encontró el elemento location_div'})
 
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+

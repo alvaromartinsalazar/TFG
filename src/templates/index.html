@@ -74,14 +74,18 @@
 
     <section class="about">
       <div class="container">
-        <h2>Acerca de nosotros</h2>
-        <p>¡Nuevos comienzos, nuevos hogares! Somos una empresa inmobiliaria fresca y apasionada.</p>
-        <a href="{{ url_for('contacto') }}" class="btn-secondary"><button>Contáctanos</button></a>
-        <div class="map-container">
-          <div id="map"></div>
-        </div>
+          <h2>Acerca de nosotros</h2>
+          <p>¡Nuevos comienzos, nuevos hogares! Somos una empresa inmobiliaria fresca y apasionada.</p>
+          <div class="btn-secondary">
+              <a href="{{ url_for('contacto') }}">
+                  <button>Contáctanos</button>
+              </a>
+          </div>
+          <div class="map-container">
+              <div id="map"></div>
+          </div>
       </div>
-    </section>
+  </section>
   
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
