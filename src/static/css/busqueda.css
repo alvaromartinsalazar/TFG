@@ -401,3 +401,22 @@ footer {
   #next-button:hover {
     background-color: #007bff; /* Cambia el color de fondo al pasar el cursor sobre el botón */
   }
+
+  .fixed-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.fixed-button:hover {
+    background-color: #0056b3;
+}

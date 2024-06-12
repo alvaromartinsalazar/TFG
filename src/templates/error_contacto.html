@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error al enviar correo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error_contacto.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Error al enviar el correo electrónico</h1>
+        <p>Inténtalo de nuevo más tarde o inténtalo desde el siguiente enlace:</p>
+        <a href="https://forms.gle/qjpWS8npyE8vdRkQ8" target="_blank"><p>Formulario alternativo</p></a><br>
+        <a href="{{ url_for('contacto') }}"><button>Volver al formulario de contacto</button></a><br>
+        <a href="{{ url_for('home') }}"><button>Volver al inicio</button></a>
+    </div>
+</body>
+</html>

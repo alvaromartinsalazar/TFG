@@ -40,7 +40,7 @@ def contacto():
             return redirect(url_for('contacto_exitoso'))  # Redirigir a una página de éxito
         except Exception as e:
             print('Error al enviar el correo electrónico:', e)
-            return 'Error al enviar el correo electrónico. Inténtalo de nuevo más tarde.'
+            return render_template('error_contacto.html')
     else:
         return render_template('contacto.html')
 
@@ -79,6 +79,7 @@ def logout():
 
 
 @app.route('/search', methods=['POST'])
+@app.route('/search', methods=['POST'])
 def search():
     num_habitaciones = request.form.get('num-habitaciones')
     superficie = request.form.get('superficie')
@@ -96,16 +97,18 @@ def search():
             url += f"{caracteristica}/"
     url += f"{page}/"
 
-    pisos_data = scrape_pisos(url)
+    pisos_data = scrape_pisos(url, num_habitaciones)
     
     return jsonify(pisos_data)
 
 
-def scrape_pisos(url):
+
+def scrape_pisos(url, num_habitaciones=None):
     """Scrapes pisos.com for apartment listings and descriptions.
 
     Args:
         url (str): The URL of the pisos.com listings page.
+        num_habitaciones (str): The number of rooms to filter by.
 
     Returns:
         list: A list of dictionaries containing scraped URLs, descriptions, image URLs, and prices.
@@ -169,18 +172,21 @@ def scrape_pisos(url):
                 elif 'planta' in text:
                     floor_text = text.split()[0]
 
-            results.append({
-                "url": complete_url,
-                "description": description_text,
-                "image_urls": image_urls_str,
-                "price": price_text,
-                "rooms": rooms_text,
-                "bathrooms": bathrooms_text,
-                "size": size_text,
-                "floor": floor_text
-            })
+            # Filter by number of rooms if specified
+            if num_habitaciones is None or rooms_text == num_habitaciones:
+                results.append({
+                    "url": complete_url,
+                    "description": description_text,
+                    "image_urls": image_urls_str,
+                    "price": price_text,
+                    "rooms": rooms_text,
+                    "bathrooms": bathrooms_text,
+                    "size": size_text,
+                    "floor": floor_text
+                })
 
     return results
+
 
 
 

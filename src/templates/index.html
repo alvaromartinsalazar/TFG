@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HogarData</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/ejemplo.css' ) }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css' ) }}">
   <link rel="shortcut icon" href="{{ url_for('static', filename='img/Logo_HogarData.png' ) }}" type="image/x-icon">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""/>
 </head>
 <body>
   <header>
@@ -13,8 +16,8 @@
       <nav>
         <ul>
           <li><a href="https://www.fotocasa.es/es/comprar/viviendas/ht">Comprar</a></li>
-          <li><a href="https://www.fotocasa.es/es/alquiler/viviendas/espana/todas-las-zonas/l">Alquilar</a></li>
-          <li><a href="#">Vender</a></li>
+          <li><a href="https://www.idealista.com/alquiler-viviendas/sevilla-sevilla/mapa">Alquilar</a></li>
+          <li><a href="https://www.pisos.com/Login?referrer=https://privatearea.pisos.com/classified/property/new">Vender</a></li>
         </ul>
       <div class="login-btn">
         <a href="{{ url_for('login') }}" class="login-btn"><button>Iniciar sesión</button></a>
@@ -32,14 +35,14 @@
         <div class="hero-content">
           <h1>Encuentra tu hogar perfecto</h1>
           <p>Explora miles de propiedades en venta y renta. Filtra por ubicación, precio, tamaño y más.</p>
-          <button>Comienza tu búsqueda</button>
+          <a href="{{ url_for('login') }}" class="btn-secondary"><button>Comienza tu búsqueda</button></a>
         </div>
       </div>
     </section>
 
     <section class="properties">
       <div class="container">
-        <h2>Propiedades destacadas</h2>
+        <h2>Novedades</h2>
         <div class="properties-list">
           <div class="property">
             <img src="{{ url_for('static', filename='img/casa.jpg' ) }}" alt="Property 1">
@@ -73,9 +76,34 @@
       <div class="container">
         <h2>Acerca de nosotros</h2>
         <p>¡Nuevos comienzos, nuevos hogares! Somos una empresa inmobiliaria fresca y apasionada.</p>
-        <a href="{{ url_for('contacto') }}"><button>Contáctanos</button></a>
+        <a href="{{ url_for('contacto') }}" class="btn-secondary"><button>Contáctanos</button></a>
+        <div class="map-container">
+          <div id="map"></div>
+        </div>
       </div>
     </section>
+  
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    <script>
+         // Las coordenadas que has scrapeado, por ejemplo:
+      let latitude = 37.3743736428512;
+      let longitude = -5.965290559322842;
+
+      // Crear el mapa con las coordenadas scrapeadas
+      let map = L.map('map').setView([latitude, longitude], 13);
+
+      // Agregar el mapa base desde OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Puedes agregar un marcador en la ubicación si lo deseas
+      L.marker([latitude, longitude]).addTo(map)
+          .bindPopup('IES Ciudad Jardín').openPopup();
+    </script>
   </main>
 
   <footer>
@@ -83,13 +111,13 @@
       <p>&copy; 2024 HogarData</p>
     </div>
   </footer>
+
+  <script>
+    // Verificar si el usuario intenta navegar hacia atrás
+    window.addEventListener('popstate', function(event) {
+        // Redirigir al usuario a la página de inicio
+        window.location.href = "{{ url_for('home') }}";
+    });
+  </script>
 </body>
 </html>
-
-<script>
-  // Verificar si el usuario intenta navegar hacia atrás
-  window.addEventListener('popstate', function(event) {
-      // Redirigir al usuario a la página de inicio
-      window.location.href = "{{ url_for('home') }}";
-  });
-</script>

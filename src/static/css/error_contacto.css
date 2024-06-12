@@ -1,0 +1,58 @@
+/* static/css/error_contacto.css */
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9; /* Fondo claro para el cuerpo */
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* Fondo blanco para el contenedor */
+}
+
+h1 {
+    color: red;
+    margin-bottom: 20px;
+}
+
+p {
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #337ab7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #2d699e;
+}
+
+a:last-of-type button{
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
