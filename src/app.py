@@ -12,14 +12,14 @@ template_dir = os.path.join(template_dir, 'src', 'templates')
 
 app = Flask(__name__, template_folder=template_dir)
 
-SPARKPOST_API_KEY = '450dc7ec7fbc0ec5b1c1d9c9dd9b6d2e7ffa5ce7'  # Reemplazar con tu clave de API de SparkPost
+SPARKPOST_API_KEY = '450dc7ec7fbc0ec5b1c1d9c9dd9b6d2e7ffa5ce7' 
 
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
     if request.method == 'POST':
         nombre = request.form['nombre']
         email = request.form['email']
-        asunto = request.form['asunto']  # Obtener el asunto del formulario
+        asunto = request.form['asunto'] 
         mensaje = request.form['mensaje']
         
         try:
@@ -28,10 +28,10 @@ def contacto():
 
             # Enviar el correo electrónico utilizando la API de SparkPost
             response = sparkpost.transmissions.send(
-                recipients=[{'address': 'alvaro.martin.salazar@iesciudadjardin.com'}],  # Cambia la dirección de correo
+                recipients=[{'address': 'alvaro.martin.salazar@iesciudadjardin.com'}],
                 content={
                     'from': email,
-                    'subject': asunto,  # Utilizar el asunto proporcionado por el usuario
+                    'subject': asunto, 
                     'text': f'Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}'
                 }
             )
@@ -53,7 +53,7 @@ def home():
         insertObject.append(dict(zip(columnNames, record)))
     cursor.close()
 
-    # Pasar las URL de las imágenes a la plantilla
+    # Pasar la pagina principal
     return render_template('index.html', data=insertObject)
 
 @app.route('/login', methods=['GET', 'POST'])
